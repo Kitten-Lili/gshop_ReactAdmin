@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import {withRouter} from 'react-router-dom'
 import {formateDate} from '../../utils/dateUtils'
-import memoryUtils from '../../utils/memoryUtils'
 import menuList from '../../config/menuConfig'
-import storageUtils from '../../utils/storageUtils'
+import {connect} from 'react-redux'
 
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 import './index.less'
+import {logout} from '../../redux/actions'
 
 const { confirm } = Modal
 
@@ -54,10 +54,9 @@ class Header extends Component {
       onOk: ()=>{
         // console.log('OK');
         // 删除保存的数据
-        storageUtils.removeUser()
-        memoryUtils.user = {}
-        // 跳转到login
-        this.props.history.replace('/login')
+        // storageUtils.removeUser()
+        // memoryUtils.user = {}
+        this.props.logout()
       }
     })
   }
@@ -74,11 +73,12 @@ class Header extends Component {
   
   render() {
     const {currentTime} = this.state
-    const title = this.getTitle()
+    // const title = this.getTitle()
+    const title = this.props.headTitle
     return (
       <div className="header">
         <div className="header-top">
-          <span>欢迎，{memoryUtils.user.username}</span>
+          <span>欢迎，{this.props.user.username}</span>
           <a href="#" onClick={this.logout}>退出</a>
         </div>
         <div className="header-bottom">
@@ -93,4 +93,7 @@ class Header extends Component {
     )
   }
 }
-export default withRouter(Header)
+export default connect(
+  state => ({headTitle: state.headTitle, user: state.user}),
+  {logout}
+)(withRouter(Header))

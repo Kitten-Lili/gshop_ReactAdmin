@@ -9,11 +9,11 @@ import{
 import AddForm from './AddForm'
 import {reqRoles,reqAddRole,reqUpdateRole} from '../../api'
 import AuthForm from './AuthForm'
-import memoryUtils from '../../utils/memoryUtils'
 import { formateDate } from '../../utils/dateUtils'
+import { connect } from 'react-redux'
 
 // 角色管理路由
-export default class Role extends Component {
+class Role extends Component {
 
   auth = React.createRef()
 
@@ -104,7 +104,7 @@ export default class Role extends Component {
     // 获取最新的menus
     const menus = this.auth.current.getMenus()
     role.menus = menus
-    role.auth_name = memoryUtils.user.username
+    role.auth_name = this.props.user.username
     const result = await reqUpdateRole(role)
     if(result.status === 0){
       // 请求成功
@@ -170,3 +170,9 @@ export default class Role extends Component {
     )
   }
 }
+export default connect(
+  state => ({
+    user: state.user
+  }),
+  {}
+)(Role)

@@ -9,11 +9,12 @@ import {
   ContainerOutlined,
   MailOutlined,
 } from '@ant-design/icons'
+import {connect} from 'react-redux'
 
 import logo from '../../assets/images/logo.png'
 
 import menuList from '../../config/menuConfig'
-import memoryUtils from '../../utils/memoryUtils'
+import {setHeadTitle} from '../../redux/actions'
 
 import './index.less'
 
@@ -23,8 +24,8 @@ class LeftNav extends Component {
   // 判断当前用户是否有该菜单项权限
   hasAuth = (item) => {
     const {key,isPublic} = item
-    const menus = memoryUtils.user.role.menus
-    const username = memoryUtils.user.username
+    const menus = this.props.user.role.menus
+    const username = this.props.user.username
     /**
      * 如果当前用户是admin
      * 当前item是否公开
@@ -68,11 +69,15 @@ class LeftNav extends Component {
       // 如果当前用户有item对应的权限,才需要显示对应的菜单项
       if (this.hasAuth(item)) {
 
+        if(item.key === path || path.indexOf(item.key) === 0){
+          this.props.setHeadTitle(item.title)
+        }
+        
         // 向pre添加<Menu.Item>
         if (!item.children) {
           pre.push((
             <Menu.Item key={item.key} icon={<PieChartOutlined />} >
-              <Link to={item.key}>
+              <Link to={item.key} onClick={()=>this.props.setHeadTitle(item.title)}>
                 {item.title}
               </Link>
             </Menu.Item>
@@ -138,4 +143,7 @@ class LeftNav extends Component {
  * 包装非路由组件，返回一个新的组件
  * 新的组件向非路由组件传递3个属性，history，location，match
  */
-export default withRouter(LeftNav)
+export default connect(
+  state => ({user: state.user}),
+  {setHeadTitle}
+)(withRouter(LeftNav))

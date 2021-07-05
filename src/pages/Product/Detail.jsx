@@ -75,7 +75,7 @@ export default class ProductDetail extends Component {
           <List.Item>
             <div>
               <span className='left'>所属分类:</span>
-              <span>{cName1} --> {cName2}</span>
+              <span>{cName1} -- {cName2}</span>
             </div>
           </List.Item>
           <List.Item>

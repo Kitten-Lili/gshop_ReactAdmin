@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, Checkbox ,message} from 'antd'
+import {connect} from 'react-redux'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import logo from '../../assets/images/logo.png'
 import './login.less'
-import {reqLogin} from '../../api'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
 import { Redirect } from 'react-router'
+import {login} from '../../redux/actions'
 
 // 登录的路由组件
-export default class Login extends Component {
+class Login extends Component {
 
   formRef = React.createRef()
 
@@ -26,22 +25,22 @@ export default class Login extends Component {
         // }).catch(erros => {
         //   console.log(erros);
         // })
-        const response = await reqLogin(username,password)
-        if(response.status === 1) {
-          // console.log('用户名密码不正确');
-          message.error('用户名密码不正确')
-          return
-        }
+        // const response = await reqLogin(username,password)
+        // if(response.status === 1) {
+        //   // console.log('用户名密码不正确');
+        //   message.error('用户名密码不正确')
+        //   return
+        // }
 
-        // 保存user
-        const user = response.data
-        memoryUtils.user = user
-        storageUtils.saveUser(user)
+        // // 保存user
+        // const user = response.data
+        // memoryUtils.user = user
+        // storageUtils.saveUser(user)
 
+        this.props.login(username,password)
+        // message.success('登录成功')
+        
         // console.log(response.data);
-        message.success('登录成功')
-        // 跳转到管理界面
-        this.props.history.replace('/')
       }
     ).catch(()=>{
         console.log('验证失败')
@@ -66,8 +65,8 @@ export default class Login extends Component {
   
   render() {
     // 如果用户已经登录,自动跳转
-    if(memoryUtils.user._id){
-      return <Redirect to="/" />
+    if(this.props.user._id){
+      return <Redirect to="/home" />
     }
 
     return (
@@ -116,3 +115,8 @@ export default class Login extends Component {
     )
   }
 }
+
+export default connect(
+  state => ({user: state.user}),
+  {login}
+)(Login)
